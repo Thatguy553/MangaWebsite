@@ -16,7 +16,7 @@
                 <a href="index.php?page=home">Home</a>
                 <a href="index.php?page=createseries">Create Series</a>
                 <a href="index.php?page=createchapter">Create Chapter</a>
-                <a href="index.php?page=reader">Reader</a>
+                <a href="index.php?page=reader">Series</a>
             </ul>
         </nav>
     </header>
