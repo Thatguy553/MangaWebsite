@@ -32,7 +32,7 @@ $seriesResult = mysqli_query($conn, $seriesQuery) or die("Could not select title
 
 <main>
     <section id="createchapter">
-        <form action="" method="post">
+        <form action="" method="post" enctype="multipart/form-data">
             <label>Series:</label>
             <select name="series" id="">
                 <?php
@@ -51,7 +51,6 @@ $seriesResult = mysqli_query($conn, $seriesQuery) or die("Could not select title
     </section>
 
     <?php
-
     # Variables
     $chosenSeries = $_POST['series'] ?? "";
     $name = $_POST['chapter'] ?? "";
@@ -59,7 +58,6 @@ $seriesResult = mysqli_query($conn, $seriesQuery) or die("Could not select title
 
     #Series Information Storage
     if (isset($_POST['submitChapter'])) {
-        $allowedExts = array("zip", "rar");
         $temp = explode(".", $_FILES["image"]["name"]);
         $extension = end($temp);
         require 'backend/database.php';
@@ -71,13 +69,13 @@ $seriesResult = mysqli_query($conn, $seriesQuery) or die("Could not select title
 
         if ($name != $row3) {
             $prefix = "series_";
-            $chapName = $name;
-            $newPath = $seriesPath . $prefix . $chosenSeries;
-            $imagePath = $seriesPath . $prefix . $chosenSeries . "/";
+            $chapName = $prefix . $name;
+            $newPath = $seriesPath . $prefix . $chosenSeries . "/" . $chapName . "/";
+            $imagePath = $seriesPath . $prefix . $chosenSeries . "/" . $chapName . "/";
 
             #Series Cover Storage Method
-            if ((($_FILES["image"]["type"] == "rar") || ($_FILES["image"]["type"] == "zip"))) {
-                if (($_FILES["image"]["size"] < 5000000)) {
+            if ((($_FILES["image"]["type"] == "application/zip") || ($_FILES["image"]["type"] == "application/x-zip-compressed"))) {
+                if (($_FILES["image"]["size"] < 100000000)) {
                     if ($_FILES["image"]["error"] > 0) {
                         echo "Return Code: " . $_FILES["image"]["error"] . "<br>";
                     } else {
@@ -104,21 +102,35 @@ $seriesResult = mysqli_query($conn, $seriesQuery) or die("Could not select title
                                     exit();
                                 } else {
 
-                                    mysqli_stmt_bind_param($stmt, "sss", $chosenSeries, $name, $newfilename);
+                                    mysqli_stmt_bind_param($stmt, "sss", $chosenSeries, $name, $chapName);
 
                                     if (mkdir($newPath)) {
                                         if (mysqli_stmt_execute($stmt)) {
                                             move_uploaded_file($_FILES["image"]["tmp_name"], $imagePath . $newfilename);
                                             echo "Stored in: " . $imagePath . $_FILES["image"]["name"];
+                                            $zip = new ZipArchive;
+                                            // Zip File Name 
+                                            if ($zip->open($imagePath . $newfilename) === TRUE) {
+
+                                                // Unzip Path 
+                                                $zip->extractTo($imagePath);
+                                                $zip->close();
+                                                echo 'Unzipped Process Successful!';
+                                                unlink($imagePath . $newfilename);
+                                            } else {
+                                                echo 'Unzipped Process failed';
+                                            }
                                         } else {
                                             rmdir($newPath);
                                             echo "Information was not inserted for some reason";
+                                            exit();
                                         }
                                     } else {
                                         echo "Chapter Already Exists";
+                                        exit();
                                     }
 
-                                    #header("Location: index.php?series=created");
+                                    header("Location: index.php?chapter=created");
                                     exit();
                                 }
                             }
@@ -126,6 +138,7 @@ $seriesResult = mysqli_query($conn, $seriesQuery) or die("Could not select title
                     }
                 } else {
                     echo "image too large";
+                    exit();
                 }
             } else {
                 echo "Invalid image";

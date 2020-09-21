@@ -36,6 +36,7 @@ if (isset($_POST['seriesCreate'])) {
             if (($_FILES["image"]["size"] < 5000000)) {
                 if ($_FILES["image"]["error"] > 0) {
                     echo "Return Code: " . $_FILES["image"]["error"] . "<br>";
+                    exit();
                 } else {
 
                     $fileName = $temp[0] . "." . $temp[1];
@@ -65,16 +66,18 @@ if (isset($_POST['seriesCreate'])) {
                                 if (mkdir($newPath)) {
                                     if (mysqli_stmt_execute($stmt)) {
                                         move_uploaded_file($_FILES["image"]["tmp_name"], $imagePath . $newfilename);
-                                        echo "Stored in: " . $imagePath . $_FILES["image"]["name"];
+                                        echo "Series information uploaded.";
                                     } else {
                                         rmdir($newPath);
                                         echo "Information was not inserted for some reason";
+                                        exit();
                                     }
                                 } else {
                                     echo "Series Already Exists";
+                                    exit();
                                 }
 
-                                #header("Location: index.php?series=created");
+                                header("Location: index.php?series=created");
                                 exit();
                             }
                         }
@@ -82,6 +85,7 @@ if (isset($_POST['seriesCreate'])) {
                 }
             } else {
                 echo "Image too large";
+                exit();
             }
         } else {
             echo "Invalid image";
