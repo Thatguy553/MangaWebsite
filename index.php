@@ -26,11 +26,11 @@ if ($_GET) {
                 if ($row2['seriesTitle'] == $_GET['series']) {
                     echo "<img src='series/" . $row2['seriesFolder'] . "/" . $row2['seriesImage'] . "' alt='" . $row2['seriesTitle'] . " Image'>";
                     echo "<p>" . $row2['seriesDescription'] . " </p>";
-                    $chapterQuery = "SELECT * FROM chapters";
+                    $chapterQuery = "SELECT * FROM chapters ORDER BY chapterNumber ASC";
                     $chapterResult = mysqli_query($conn, $chapterQuery) or die("Could not execute query on Line 29");
                     while ($chapters = mysqli_fetch_array($chapterResult)) {
                         if ($chapters['series'] == $_GET['series'])
-                            echo "<a href='index.php?page=reader&series=" . urlencode($row2['seriesTitle']) . "&chapter=" . urlencode($chapters['chapterName']) . "'>" . $chapters['chapterName'] . "</a>";
+                            echo "<a href='index.php?page=reader&series=" . urlencode($row2['seriesTitle']) . "&chapter=" . urlencode($chapters['chapterFolder']) . "'>" . $chapters['chapterName'] . "</a>";
                     }
                 }
             }
@@ -43,22 +43,28 @@ if ($_GET) {
             while ($row3 = mysqli_fetch_array($result2)) {
                 if ($row3['seriesTitle'] == $_GET['series']) {
                     while ($chapters2 = mysqli_fetch_array($displayResult)) {
-                        if ($chapters2['chapterFolder'] == "series_" . $_GET['chapter']) {
+                        if ($chapters2['chapterFolder'] == $_GET['chapter']) {
                             $pages = scandir("series/" . $row3['seriesFolder'] . "/" . $chapters2['chapterFolder'] . "/");
                             $pagesLength = count($pages);
                             $i = 0;
                             while ($i < $pagesLength) {
-                                if ($pages[$pageIndex] != "." || $pages[$pageIndex] != "..") {
+                                if ($pages[$pageIndex] == "." || $pages[$pageIndex] == "..") {
                                     echo "<img src='series/" . rawurlencode($row3['seriesFolder']) . "/" . rawurlencode($chapters2['chapterFolder']) . "/" . rawurlencode($pages[$pageIndex]) . "'>";
                                     $pageIndex = $pageIndex + 1;
                                 }
                                 $i++;
                             }
-                            echo "<a href='index.php?page=reader&series=" . rawurlencode($row3['seriesTitle']) . "'>Return to series</a>";
                         }
                     }
                 }
             }
+            $chapString = $_GET['chapter'] ?? "";
+            $newLink = preg_replace("/[^0-9]/", "", $chapString);
+            print_r($newLink);
+            echo "<a href='index.php?page=" . $_GET['page'] . "&series=" . $_GET['series'] . "&chapter=series_" . ($newLink + 1) . "'>Next</a>";
+            echo "<a href='index.php?page=" . $_GET['page'] . "&series=" . $_GET['series'] . "&chapter=series_" . ($newLink - 1) . "'>Last</a>";
+
+            echo "<a href='index.php?page=reader&series=" . rawurlencode($row3['seriesTitle']) . "'>Return to series</a>";
         }
     } else {
         include 'pages/home.php';

@@ -43,6 +43,7 @@ $seriesResult = mysqli_query($conn, $seriesQuery) or die("Could not select title
                 }
                 ?>
             </select>
+            <input type="number" name="chapterNum" placeholder="Chapter Number..." required>
             <input name="chapter" type="text" placeholder="Chapter Name..." required>
             <label>Zip Files Only</label>
             <input type="file" name="image">
@@ -54,6 +55,7 @@ $seriesResult = mysqli_query($conn, $seriesQuery) or die("Could not select title
     # Variables
     $chosenSeries = $_POST['series'] ?? "";
     $name = $_POST['chapter'] ?? "";
+    $number = $_POST['chapterNum'] ?? "";
     $seriesPath = "series/";
 
     #Series Information Storage
@@ -69,7 +71,7 @@ $seriesResult = mysqli_query($conn, $seriesQuery) or die("Could not select title
 
         if ($name != $row3) {
             $prefix = "series_";
-            $chapName = $prefix . $name;
+            $chapName = $prefix . $number;
             $newPath = $seriesPath . $prefix . $chosenSeries . "/" . $chapName . "/";
             $imagePath = $seriesPath . $prefix . $chosenSeries . "/" . $chapName . "/";
 
@@ -95,14 +97,14 @@ $seriesResult = mysqli_query($conn, $seriesQuery) or die("Could not select title
                                 header("Location: index.php?error=noChapterInfo");
                                 exit();
                             } else {
-                                $sql = "INSERT INTO chapters (series, chapterName, chapterFolder) VALUES (?, ?, ?)";
+                                $sql = "INSERT INTO chapters (series, chapterNumber, chapterName, chapterFolder) VALUES (?, ?, ?, ?)";
                                 $stmt = mysqli_stmt_init($conn);
                                 if (!mysqli_stmt_prepare($stmt, $sql)) {
                                     header("Location: index.php?error=SQLChapterfail");
                                     exit();
                                 } else {
 
-                                    mysqli_stmt_bind_param($stmt, "sss", $chosenSeries, $name, $chapName);
+                                    mysqli_stmt_bind_param($stmt, "ssss", $chosenSeries, $number, $name, $chapName);
 
                                     if (mkdir($newPath)) {
                                         if (mysqli_stmt_execute($stmt)) {
