@@ -49,9 +49,41 @@ if ($_GET) {
                             $pages = scandir("series/" . $row3['seriesFolder'] . "/series_" . $newLink . "/");
                             $pagesLength = count($pages);
 
+                            $temp = $_GET['series'];
+
+                            $stmt = $conn->prepare("SELECT series FROM chapters WHERE series=?");
+
+                            $stmt->bind_param("s", $temp);
+
+                            $stmt->execute();
+
+                            $count = 0;
+
+                            $result = $stmt->get_result();
+                            while ($row = $result->fetch_assoc()) {
+                                $count = $count + 1;
+                            }
+
+                            if ($count > 1 && $count != $newLink && $newLink > 1) {
+                                echo "<a href='index.php?page=" . $_GET['page'] . "&series=" . $_GET['series'] . "&chapter=series_" . ($newLink + 1) . "'>Next</a>";
+                                echo "<a href='index.php?page=" . $_GET['page'] . "&series=" . $_GET['series'] . "&chapter=series_" . ($newLink - 1) . "'>Last</a>";
+                            } else if ($count > 1 && $count != $newLink) {
+                                echo "<a href='index.php?page=" . $_GET['page'] . "&series=" . $_GET['series'] . "&chapter=series_" . ($newLink + 1) . "'>Next</a>";
+                            } else if ($newLink > 1) {
+                                echo "<a href='index.php?page=" . $_GET['page'] . "&series=" . $_GET['series'] . "&chapter=series_" . ($newLink - 1) . "'>Last</a>";
+                            }
+
                             for ($i = 2; $i < $pagesLength; $i++) {
                                 echo "<img src='series/series_" . rawurlencode($_GET['series']) . "/series_" . rawurlencode($newLink) . "/" . rawurlencode($pages[$i]) . "'>";
                                 #$pageIndex = $pageIndex + 1;
+                            }
+                            if ($count > 1 && $count != $newLink && $newLink > 1) {
+                                echo "<a href='index.php?page=" . $_GET['page'] . "&series=" . $_GET['series'] . "&chapter=series_" . ($newLink + 1) . "'>Next</a>";
+                                echo "<a href='index.php?page=" . $_GET['page'] . "&series=" . $_GET['series'] . "&chapter=series_" . ($newLink - 1) . "'>Last</a>";
+                            } else if ($count > 1 && $count != $newLink) {
+                                echo "<a href='index.php?page=" . $_GET['page'] . "&series=" . $_GET['series'] . "&chapter=series_" . ($newLink + 1) . "'>Next</a>";
+                            } else if ($newLink > 1) {
+                                echo "<a href='index.php?page=" . $_GET['page'] . "&series=" . $_GET['series'] . "&chapter=series_" . ($newLink - 1) . "'>Last</a>";
                             }
                             break;
                         }
@@ -62,6 +94,7 @@ if ($_GET) {
 
 
             #print_r($newLink);
+
             #echo "<a href='index.php?page=" . $_GET['page'] . "&series=" . $_GET['series'] . "&chapter=series_" . ($newLink + 1) . "'>Next</a>";
             #echo "<a href='index.php?page=" . $_GET['page'] . "&series=" . $_GET['series'] . "&chapter=series_" . ($newLink - 1) . "'>Last</a>";
 
