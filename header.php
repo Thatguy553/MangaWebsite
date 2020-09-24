@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="/css/style.css">
     <title>Manga Website</title>
 </head>
 
@@ -16,8 +16,8 @@
         <h1>Scanlation_Group</h1>
         <nav class='pubNav'>
             <ul>
-                <a href="index.php?page=home">Home</a>
-                <a href="index.php?page=reader">Series</a>
+                <a href="/home">Home</a>
+                <a href="/reader">Series</a>
             </ul>
         </nav>
 
@@ -26,17 +26,17 @@
             echo "<nav class='staffNav'>";
             echo "<ul>";
             if ($_SESSION['role'] == "staff") {
-                echo    "<a href='index.php?page=createseries'>Create Series</a>";
-                echo    "<a href='index.php?page=createchapter'>Create Chapter</a>";
+                echo    "<a href='/createseries'>Create Series</a>";
+                echo    "<a href='/createchapter'>Create Chapter</a>";
             }
-            echo "<a href='index.php?page=logout'>Logout</a>";
+            echo "<a href='/logout'>Logout</a>";
             echo "</ul>";
             echo "</nav>";
         } else {
             echo "<nav>";
             echo "<ul>";
-            echo "<a href='index.php?page=signup'>Signup</a>
-                <a href='index.php?page=login'>Login</a>";
+            echo "<a href='/signup'>Signup</a>
+                <a href='/login'>Login</a>";
             echo "</ul>";
             echo "</nav>";
         }
