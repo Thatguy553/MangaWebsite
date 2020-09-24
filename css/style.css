@@ -1,0 +1,39 @@
+body {
+  margin: 0;
+}
+
+header {
+  display: flex;
+  flex-direction: column;
+  background-color: rgb(29, 29, 29);
+  text-align: center;
+  color: white;
+}
+
+nav {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+nav ul {
+  padding-inline-start: 0;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  padding: 10px;
+}
+
+.chap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.pages {
+  margin-top: 0.3rem;
+  margin-bottom: 0.3rem;
+  width: 70%;
+}

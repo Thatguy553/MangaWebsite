@@ -2,7 +2,7 @@
     <h1>Create Series</h1>
     <form action="" method="post" enctype="multipart/form-data">
         <input name="title" type="text" placeholder="Series Name..." required>
-        <textarea name="description" cols="30" rows="10"></textarea>
+        <textarea name="description" cols="30" rows="10" required></textarea>
         <input type="file" name="image">
         <input type="submit" name="seriesCreate">
     </form>

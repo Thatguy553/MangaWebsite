@@ -1,9 +1,9 @@
 <?php
 
 $servername = "localhost";
-$username = "secret";
-$password = "secret";
-$dbname = "secret";
+$username = "root";
+$password = "Thatguy553";
+$dbname = "mangawebsitedb";
 
 $conn = mysqli_connect($servername, $username, $password, $dbname);
 
