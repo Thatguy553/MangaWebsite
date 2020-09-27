@@ -44,7 +44,7 @@ $router->new('/signup(.*)', function ($args) {
             <button type='submit' value='' name='signup-enter'>Signup</button> <!-- Signup Button -->
         </form>
 
-        <p class='rtwbutton'><a href='index.php?page=home'>Return</a> to the website home page.</p>
+        <p class='rtwbutton'><a href='/home'>Return</a> to the website home page.</p>
 
     </section>
     </main>";
@@ -72,15 +72,15 @@ $router->new(
     '/createseries(.*)',
     function ($args) {
         if ($_SESSION['role'] == "staff" || $_SESSION['role'] == "admin") {
-            echo "<section>
+            echo    "<section>
                         <h1>Create Series</h1>
                         <form action='' method='post' enctype='multipart/form-data'>
-                        <input name='title' type='text' placeholder='Series Name...'' required>
-                        <textarea name='description' cols='30' rows='10' required></textarea>
-                        <input type='file' name='image'>
-                        <input type='submit' name='seriesCreate'>
-                    </form>
-                </section>";
+                            <input name='title' type='text' placeholder='Series Name...'' required>
+                            <textarea name='description' cols='30' rows='10' required></textarea>
+                            <input type='file' name='image'>
+                            <input type='submit' name='seriesCreate'>
+                        </form>
+                    </section>";
 
             # Variables
             $title = $_POST['title'] ?? "";
@@ -89,14 +89,12 @@ $router->new(
 
             #Series Information Storage
             if (isset($_POST['seriesCreate'])) {
-                $allowedExts = array("jpeg", "jpg", "png");
                 $temp = explode(".", $_FILES["image"]["name"]);
-                $extension = end($temp);
                 require 'backend/database.php';
 
                 # Folder Creation Method
                 $query = "SELECT seriesTitle FROM series limit 1";
-                $result = mysqli_query($conn, $query) or die("Could not execute query on Line 30");
+                $result = mysqli_query($conn, $query) or die("Could not execute query on Line 97");
                 $row = mysqli_fetch_array($result);
 
                 if ($title != $row) {
@@ -124,13 +122,13 @@ $router->new(
 
                                     #Series Title and Description Upload Method
                                     if (empty($title) || empty($description)) {
-                                        header("Location: index.php?error=noSeriesInfo");
+                                        header("Location: /createseries?error=noSeriesInfo");
                                         exit();
                                     } else {
                                         $sql = "INSERT INTO series (seriesTitle, seriesDescription, seriesImage, seriesFolder) VALUES (?, ?, ?, ?)";
                                         $stmt = mysqli_stmt_init($conn);
                                         if (!mysqli_stmt_prepare($stmt, $sql)) {
-                                            header("Location: index.php?error=SQLseriesfail");
+                                            header("Location: /createseries?error=SQLseriesfail");
                                             exit();
                                         } else {
 
@@ -150,7 +148,7 @@ $router->new(
                                                 exit();
                                             }
 
-                                            header("Location: index.php?series=created");
+                                            header("Location: /createseries?series=created");
                                             exit();
                                         }
                                     }
@@ -164,7 +162,11 @@ $router->new(
                         echo "Invalid image";
                         exit();
                     }
+                } else {
+                    echo "Title not equal to row";
                 }
+            } else {
+                echo "Button Not Pressed";
             }
         }
     },
