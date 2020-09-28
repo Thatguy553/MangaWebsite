@@ -1,3 +1,64 @@
+<?php
+require 'backend/database.php';
+$query2 = "SELECT * FROM series";
+$resultSeries = mysqli_query($conn, $query2) or die("Could not execute query on Line 18");
+
+echo "<table class='seriesTable'>";
+
+echo "<tr>";
+echo "<th>Series</th>";
+echo "<th>Likes</th>";
+echo "<th>Dislikes</th>";
+echo "<th>Chapters</th>";
+echo "</tr>";
+while ($rowList = mysqli_fetch_array($resultSeries)) {
+    echo "<tr>";
+    echo "<td>" . $rowList['seriesTitle'] . "</td>";
+    echo "<td>" . $rowList['seriesLikes'] . "</td>";
+    echo "<td>" . $rowList['seriesDislikes'] . "</td>";
+    echo "<td>" . $rowList['seriesChapters'] . "</td>";
+    echo "<form action='' method='post'>";
+    echo "<td><button name='sDelete' type='submit' value='" . $rowList['seriesUID'] . "'>Delete</button></td>";
+    echo "</form>";
+    echo "</tr>";
+}
+echo "</table>";
+
+if (isset($_POST['sDelete'])) {
+    $value = $_POST['sDelete'];
+    seriesDelete($value);
+}
+
+function seriesDelete($seriesID)
+{
+    global $resultSeries;
+    global $conn;
+    while ($rowList = mysqli_fetch_array($resultSeries)) {
+        if ($rowList['seriesUID'] == $seriesID) {
+            if (!array_map('unlink', glob("series/" . $rowList['seriesFolder'] . "/*"))) {
+                $sqlDel = $conn->prepare("DELETE * FROM series WHERE seriesUID = ?");
+                $stmt = mysqli_stmt_init($conn);
+                if (mysqli_stmt_prepare($stmt, $sqlDel)) {
+                    mysqli_stmt_bind_param($stmt, "s", $seriesID);
+                    if ($conn->query($sqlDel) === TRUE) {
+                        echo "Series and Chapters deleted.";
+                    } else {
+                        echo "Series could not be deleted";
+                    }
+                } else {
+                    echo "sql didnt prepare";
+                }
+                rmdir("series/" . $rowList['seriesFolder']);
+            }
+        } else {
+            echo "seriesUID apparently didnt match";
+            #header("Location: index.php?page=createseries&error=uidDidntMatch");
+            #exit();
+        }
+    }
+}
+?>
+
 <section>
     <h1>Create Series</h1>
     <form action="" method="post" enctype="multipart/form-data">
@@ -19,7 +80,6 @@ if (isset($_POST['seriesCreate'])) {
     $allowedExts = array("jpeg", "jpg", "png");
     $temp = explode(".", $_FILES["image"]["name"]);
     $extension = end($temp);
-    require 'backend/database.php';
 
     # Folder Creation Method
     $query = "SELECT seriesTitle FROM series limit 1";
