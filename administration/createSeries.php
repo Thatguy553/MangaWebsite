@@ -2,7 +2,6 @@
 require 'backend/database.php';
 $query2 = "SELECT * FROM series";
 $resultSeries = mysqli_query($conn, $query2) or die("Could not execute query on Line 18");
-
 echo "<table class='seriesTable'>";
 
 echo "<tr>";
@@ -11,6 +10,7 @@ echo "<th>Likes</th>";
 echo "<th>Dislikes</th>";
 echo "<th>Chapters</th>";
 echo "</tr>";
+
 while ($rowList = mysqli_fetch_array($resultSeries)) {
     echo "<tr>";
     echo "<td>" . $rowList['seriesTitle'] . "</td>";
@@ -26,27 +26,28 @@ echo "</table>";
 
 if (isset($_POST['sDelete'])) {
     $value = $_POST['sDelete'];
+    print("Calling Function<br/>");
     seriesDelete($value);
 }
 
 function seriesDelete($seriesID)
 {
+    print("Function Exectuted<br/>");
     global $resultSeries;
     global $conn;
     while ($rowList = mysqli_fetch_array($resultSeries)) {
+        print("Row list <br/>");
+        print_r($rowList);
         if ($rowList['seriesUID'] == $seriesID) {
+            print("It found one <br/>");
             if (!array_map('unlink', glob("series/" . $rowList['seriesFolder'] . "/*"))) {
-                $sqlDel = $conn->prepare("DELETE * FROM series WHERE seriesUID = ?");
-                $stmt = mysqli_stmt_init($conn);
-                if (mysqli_stmt_prepare($stmt, $sqlDel)) {
-                    mysqli_stmt_bind_param($stmt, "s", $seriesID);
-                    if ($conn->query($sqlDel) === TRUE) {
-                        echo "Series and Chapters deleted.";
-                    } else {
-                        echo "Series could not be deleted";
-                    }
+                print("Query Exectuted <br/>");
+                $sth = $conn->prepare("DELETE FROM series WHERE seriesUID=$seriesID");
+
+                if ($sth->execute()) {
+                    print("True");
                 } else {
-                    echo "sql didnt prepare";
+                    print("Returned False?");
                 }
                 rmdir("series/" . $rowList['seriesFolder']);
             }

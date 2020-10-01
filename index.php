@@ -21,7 +21,7 @@ if ($_GET) {
 
         # Display Series links
         $query = "SELECT * FROM series";
-        $result = mysqli_query($conn, $query) or die("Could not execute query on Line 12.");
+        $result = mysqli_query($conn, $query) or die("Could not execute query on Line 24.");
         # Display Series Links
         if (!($_GET['series'] ?? "")) {
             while ($row = mysqli_fetch_array($result)) {
@@ -30,7 +30,7 @@ if ($_GET) {
         }
 
         # Display Series Infomation
-        $result2 = mysqli_query($conn, $query) or die("Could not execute query on Line 20.");
+        $result2 = mysqli_query($conn, $query) or die("Could not execute query on Line 33.");
         if (($_GET['series'] ?? "") && !($_GET['chapter'] ?? "")) {
             while ($row2 = mysqli_fetch_array($result2)) {
                 if ($row2['seriesTitle'] == $_GET['series']) {

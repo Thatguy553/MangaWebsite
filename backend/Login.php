@@ -7,21 +7,13 @@ if (isset($_POST['loginb'])) {
     $password = $_POST['password'];
 
     if (empty($username) || empty($password)) {
-<<<<<<< Updated upstream
-        header("Location: ../home?page=login&error=emptyfields");
-=======
-        header("Location: ../login?page=login&error=emptyfields");
->>>>>>> Stashed changes
+        header("Location: ../index.php?page=login&error=emptyfields");
         exit();
     } else {
         $sql = "SELECT * FROM users WHERE username=? OR username=?;";
         $stmt = mysqli_stmt_init($conn);
         if (!mysqli_stmt_prepare($stmt, $sql)) {
-<<<<<<< Updated upstream
-            header("Location: ../home?page=login&error=sqlerror");
-=======
-            header("Location: ../login?page=login&page=login&error=sqlerror");
->>>>>>> Stashed changes
+            header("Location: ../index.php?page=login&page=login&error=sqlerror");
             exit();
         } else {
             mysqli_stmt_bind_param($stmt, "ss", $username, $username);
@@ -30,11 +22,7 @@ if (isset($_POST['loginb'])) {
             if ($row = mysqli_fetch_assoc($result)) {
                 $Pcheck = password_verify($password, $row['password']);
                 if ($Pcheck == false) {
-<<<<<<< Updated upstream
-                    header("Location: ../home?page=login&error=wrongpwd");
-=======
-                    header("Location: ../login?page=login&error=wrongpwd");
->>>>>>> Stashed changes
+                    header("Location: ../index.php?page=login&error=wrongpwd");
                     exit();
                 } else if ($Pcheck == true) {
                     session_start();
@@ -44,30 +32,19 @@ if (isset($_POST['loginb'])) {
                     $_SESSION['role'] = $row['role'];
 
 
-<<<<<<< Updated upstream
-                    header("Location: ../home?page=login&login=success!");
+                    header("Location: ../index.php?page=login&login=success!");
                     exit();
                 } else {
-                    header("Location: ../home?page=login&error=wrongpwd");
+                    header("Location: ../index.php?page=login&error=wrongpwd");
                     exit();
                 }
             } else {
-                header("Location: ../home?page=login&error=nouser");
-=======
-                    header("Location: ../login?page=login&login=success!");
-                    exit();
-                } else {
-                    header("Location: ../login?page=login&error=wrongpwd");
-                    exit();
-                }
-            } else {
-                header("Location: ../login?page=login&error=nouser");
->>>>>>> Stashed changes
+                header("Location: ../index.php?page=login&error=nouser");
                 exit();
             }
         }
     }
 } else {
-    header("Location: ../home");
+    header("Location: ../index.php?page=home");
     exit();
 }
