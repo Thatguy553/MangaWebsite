@@ -3,7 +3,6 @@ require 'backend/database.php';
 $query2 = "SELECT * FROM series";
 $resultSeries = mysqli_query($conn, $query2) or die("Could not execute query on Line 18");
 echo "<table class='seriesTable'>";
-
 echo "<tr>";
 echo "<th>Series</th>";
 echo "<th>Likes</th>";
@@ -49,10 +48,11 @@ function seriesDelete($seriesID)
                     print("Returned False?");
                 }
                 rmdir("series/" . $row['seriesFolder']);
+            } else {
+                echo "Something Failed";
+                #header("Location: index.php?page=createseries&error=uidDidntMatch");
+                #exit();
             }
-        } else {
-            header("Location: index.php?page=createseries&error=uidDidntMatch");
-            exit();
         }
     }
 }
@@ -136,7 +136,7 @@ if (isset($_POST['seriesCreate'])) {
                                     exit();
                                 }
 
-                                header("Location: index.php?series=created");
+                                header("Location: index.php?page=createseries&series=created");
                                 exit();
                             }
                         }

@@ -65,9 +65,8 @@ function seriesDelete($chapterUID)
                         rmdir("series/" . $row2['seriesFolder'] . "/" . $row['chapterFolder']);
                     }
                 } else {
-                    echo "Something went wrong";
-                    #header("Location: index.php?page=createchapter&error=uidDidntMatch");
-                    #exit();
+                    header("Location: index.php?page=createchapter&error=uidDidntMatch");
+                    exit();
                 }
             }
         }
@@ -179,7 +178,7 @@ function seriesDelete($chapterUID)
                                         exit();
                                     }
 
-                                    header("Location: index.php?chapter=created");
+                                    header("Location: index.php?page=createseries?chapter=created");
                                     exit();
                                 }
                             }
