@@ -1,0 +1,25 @@
+{
+  "name": "mangawebsite",
+  "version": "1.0.0",
+  "description": "A template website for manga scanlation groups.",
+  "main": "index.php",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Thatguy553/Manga-Website-Template.git"
+  },
+  "keywords": [
+    "Manga"
+  ],
+  "author": "Thatguy553",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/Thatguy553/Manga-Website-Template/issues"
+  },
+  "homepage": "https://github.com/Thatguy553/Manga-Website-Template#readme",
+  "dependencies": {
+    "symfony": "0.0.1"
+  }
+}
