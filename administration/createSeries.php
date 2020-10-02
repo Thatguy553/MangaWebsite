@@ -11,14 +11,19 @@ echo "<th>Dislikes</th>";
 echo "<th>Chapters</th>";
 echo "</tr>";
 
-while ($rowList = mysqli_fetch_array($resultSeries)) {
+$data = array();
+while ($row = mysqli_fetch_array($resultSeries)) {
+    $data[] = $row;
+}
+
+foreach ($data as $row) {
     echo "<tr>";
-    echo "<td>" . $rowList['seriesTitle'] . "</td>";
-    echo "<td>" . $rowList['seriesLikes'] . "</td>";
-    echo "<td>" . $rowList['seriesDislikes'] . "</td>";
-    echo "<td>" . $rowList['seriesChapters'] . "</td>";
+    echo "<td>" . $row['seriesTitle'] . "</td>";
+    echo "<td>" . $row['seriesLikes'] . "</td>";
+    echo "<td>" . $row['seriesDislikes'] . "</td>";
+    echo "<td>" . $row['seriesChapters'] . "</td>";
     echo "<form action='' method='post'>";
-    echo "<td><button name='sDelete' type='submit' value='" . $rowList['seriesUID'] . "'>Delete</button></td>";
+    echo "<td><button name='sDelete' type='submit' value='" . $row['seriesUID'] . "'>Delete</button></td>";
     echo "</form>";
     echo "</tr>";
 }
@@ -26,35 +31,28 @@ echo "</table>";
 
 if (isset($_POST['sDelete'])) {
     $value = $_POST['sDelete'];
-    print("Calling Function<br/>");
     seriesDelete($value);
 }
 
 function seriesDelete($seriesID)
 {
-    print("Function Exectuted<br/>");
-    global $resultSeries;
     global $conn;
-    while ($rowList = mysqli_fetch_array($resultSeries)) {
-        print("Row list <br/>");
-        print_r($rowList);
-        if ($rowList['seriesUID'] == $seriesID) {
-            print("It found one <br/>");
-            if (!array_map('unlink', glob("series/" . $rowList['seriesFolder'] . "/*"))) {
-                print("Query Exectuted <br/>");
+    global $data;
+    foreach ($data as $row) {
+        if ($row['seriesUID'] == $seriesID) {
+            if (!array_map('unlink', glob("series/" . $row['seriesFolder'] . "/*"))) {
                 $sth = $conn->prepare("DELETE FROM series WHERE seriesUID=$seriesID");
 
                 if ($sth->execute()) {
-                    print("True");
+                    print("Series Deleted.");
                 } else {
                     print("Returned False?");
                 }
-                rmdir("series/" . $rowList['seriesFolder']);
+                rmdir("series/" . $row['seriesFolder']);
             }
         } else {
-            echo "seriesUID apparently didnt match";
-            #header("Location: index.php?page=createseries&error=uidDidntMatch");
-            #exit();
+            header("Location: index.php?page=createseries&error=uidDidntMatch");
+            exit();
         }
     }
 }

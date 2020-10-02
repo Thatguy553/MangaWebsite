@@ -4,8 +4,12 @@ require 'backend/database.php';
 $query = "SELECT * FROM chapters";
 $result = mysqli_query($conn, $query) or die("Could not execute query on Line 5.");
 
-echo "<table class='userTable'>";
+$chapData = array();
+while ($row = mysqli_fetch_array($result)) {
+    $chapData[] = $row;
+}
 
+echo "<table class='userTable'>";
 echo "<tr>";
 echo "<th>Chapter UID</th>";
 echo "<th>series</th>";
@@ -13,22 +17,67 @@ echo "<th>Chapter Name</th>";
 echo "<th>Chapter Folder</th>";
 echo "</tr>";
 
-while ($row = mysqli_fetch_array($result)) {
-
+foreach ($chapData as $row) {
     echo "<tr>";
     echo "<td>" . $row['chapterUID'] . "</td>";
     echo "<td>" . $row['series'] . "</td>";
     echo "<td>" . $row['chapterName'] . "</td>";
     echo "<td>" . $row['chapterFolder'] . "</td>";
+    echo "<form action='' method='post'>";
+    echo "<td><button name='cDelete' type='submit' value='" . $row['chapterUID'] . "'>Delete</button></td>";
+    echo "</form>";
     echo "</tr>";
 }
 
 echo "</table>";
 
-$seriesQuery = "SELECT seriesTitle FROM series";
+$seriesQuery = "SELECT * FROM series";
 $seriesResult = mysqli_query($conn, $seriesQuery) or die("Could not select titles from series.");
 
+$seriesData = array();
+while ($row = mysqli_fetch_array($seriesResult)) {
+    $seriesData[] = $row;
+}
+
+if (isset($_POST['cDelete'])) {
+    $value = $_POST['cDelete'];
+    seriesDelete($value);
+}
+
+function seriesDelete($chapterUID)
+{
+    global $conn;
+    global $chapData;
+    global $seriesData;
+    print_r($chapterUID);
+    foreach ($chapData as $row) {
+        foreach ($seriesData as $row2) {
+            if ($row['chapterUID'] == $chapterUID) {
+                if ($row['series'] == $row2['seriesTitle']) {
+                    if (!array_map('unlink', glob("series/" . $row2['seriesFolder'] . "/" . $row['chapterFolder'] . "/*"))) {
+                        $sth = $conn->prepare("DELETE FROM chapters WHERE chapterUID=$chapterUID");
+
+                        if ($sth->execute()) {
+                            print("Series Deleted.");
+                        } else {
+                            print("Returned False?");
+                        }
+                        rmdir("series/" . $row2['seriesFolder'] . "/" . $row['chapterFolder']);
+                    }
+                } else {
+                    echo "Something went wrong";
+                    #header("Location: index.php?page=createchapter&error=uidDidntMatch");
+                    #exit();
+                }
+            }
+        }
+    }
+}
+
+
 ?>
+
+
 
 <main>
     <section id="createchapter">
@@ -36,10 +85,8 @@ $seriesResult = mysqli_query($conn, $seriesQuery) or die("Could not select title
             <label>Series:</label>
             <select name="series" id="">
                 <?php
-                $index = 0;
-                while ($row2 = mysqli_fetch_array($seriesResult)) {
-                    echo "<option value='" . $row2[$index] . "'>" . $row2[$index] . "</option>";
-                    $index = $index++;
+                foreach ($seriesData as $row2) {
+                    echo "<option value='" . $row2['seriesTitle'] . "'>" . $row2['seriesTitle'] . "</option>";
                 }
                 ?>
             </select>
