@@ -17,16 +17,21 @@ if ($_GET) {
             exit();
         }
     } else if ($page == "reader") {
+        echo "<main class='reader'>";
         require 'backend/database.php';
-
         # Display Series links
         $query = "SELECT * FROM series";
         $result = mysqli_query($conn, $query) or die("Could not execute query on Line 24.");
         # Display Series Links
         if (!($_GET['series'] ?? "")) {
+            echo "<section class='seriesSection'>";
             while ($row = mysqli_fetch_array($result)) {
+                echo "<div class='series'>";
+                echo "<a href='index.php?page=reader&series=" . rawurlencode($row['seriesTitle']) . "'><img src='series/" . $row['seriesFolder'] . "/" . $row['seriesImage'] . "' alt='" . $row['seriesTitle'] . " Image'></a>";
                 echo "<a href='index.php?page=reader&series=" . rawurlencode($row['seriesTitle']) . "'>" . $row['seriesTitle'] . "</a>";
+                echo "</div>";
             }
+            echo "</section>";
         }
 
         # Display Series Infomation
@@ -34,14 +39,20 @@ if ($_GET) {
         if (($_GET['series'] ?? "") && !($_GET['chapter'] ?? "")) {
             while ($row2 = mysqli_fetch_array($result2)) {
                 if ($row2['seriesTitle'] == $_GET['series']) {
+                    echo "<section class='seriesInfoDisplay'>";
+                    echo "<div class='seriesInfo'>";
                     echo "<img src='series/" . $row2['seriesFolder'] . "/" . $row2['seriesImage'] . "' alt='" . $row2['seriesTitle'] . " Image'>";
                     echo "<p>" . $row2['seriesDescription'] . " </p>";
+                    echo "</div>";
                     $chapterQuery = "SELECT * FROM chapters ORDER BY chapterNumber ASC";
                     $chapterResult = mysqli_query($conn, $chapterQuery) or die("Could not execute query on Line 29");
+                    echo "<div class='chapters'>";
                     while ($chapters = mysqli_fetch_array($chapterResult)) {
                         if ($chapters['series'] == $_GET['series'])
                             echo "<a href='index.php?page=reader&series=" . rawurlencode($row2['seriesTitle']) . "&chapter=" . rawurlencode($chapters['chapterFolder']) . "'>" . $chapters['chapterName'] . "</a>";
                     }
+                    echo "</div>";
+                    echo "</section>";
                 }
             }
         }
@@ -56,19 +67,14 @@ if ($_GET) {
                 if ($row3['seriesTitle'] == ($_GET['series'])) {
                     while ($chapters2 = mysqli_fetch_array($displayResult)) {
                         if ($chapters2['chapterFolder'] == $_GET['chapter']) {
+                            echo "<section class='pages'>";
                             $pages = scandir("series/" . $row3['seriesFolder'] . "/series_" . $newLink . "/");
                             $pagesLength = count($pages);
-
                             $temp = $_GET['series'];
-
                             $stmt = $conn->prepare("SELECT series FROM chapters WHERE series=?");
-
                             $stmt->bind_param("s", $temp);
-
                             $stmt->execute();
-
                             $count = 0;
-
                             $result = $stmt->get_result();
                             while ($row = $result->fetch_assoc()) {
                                 $count = $count + 1;
@@ -95,20 +101,14 @@ if ($_GET) {
                             } else if ($newLink > 1) {
                                 echo "<a href='index.php?page=" . $_GET['page'] . "&series=" . $_GET['series'] . "&chapter=series_" . ($newLink - 1) . "'>Last</a>";
                             }
+                            echo "</section>";
                             break;
                         }
                     }
                     break;
                 }
             }
-
-
-            #print_r($newLink);
-
-            #echo "<a href='index.php?page=" . $_GET['page'] . "&series=" . $_GET['series'] . "&chapter=series_" . ($newLink + 1) . "'>Next</a>";
-            #echo "<a href='index.php?page=" . $_GET['page'] . "&series=" . $_GET['series'] . "&chapter=series_" . ($newLink - 1) . "'>Last</a>";
-
-            #echo "<a href='index.php?page=reader&series=" . rawurlencode($row3['seriesTitle']) . "'>Return to series</a>";
+            echo "</main>";
         }
     } else if ($page == "signup") {
         include 'pages/SignupBody.php';

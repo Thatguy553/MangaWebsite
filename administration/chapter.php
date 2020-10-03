@@ -1,85 +1,23 @@
-<?php
-require 'backend/database.php';
+<main class="createChapter">
 
-$query = "SELECT * FROM chapters";
-$result = mysqli_query($conn, $query) or die("Could not execute query on Line 5.");
+    <?php
+    require 'backend/database.php';
 
-$chapData = array();
-while ($row = mysqli_fetch_array($result)) {
-    $chapData[] = $row;
-}
+    $query = "SELECT * FROM chapters";
+    $result = mysqli_query($conn, $query) or die("Could not execute query on Line 5.");
+    $seriesQuery = "SELECT * FROM series";
+    $seriesResult = mysqli_query($conn, $seriesQuery) or die("Could not select titles from series.");
 
-echo "<table class='userTable'>";
-echo "<tr>";
-echo "<th>Chapter UID</th>";
-echo "<th>series</th>";
-echo "<th>Chapter Name</th>";
-echo "<th>Chapter Folder</th>";
-echo "</tr>";
-
-foreach ($chapData as $row) {
-    echo "<tr>";
-    echo "<td>" . $row['chapterUID'] . "</td>";
-    echo "<td>" . $row['series'] . "</td>";
-    echo "<td>" . $row['chapterName'] . "</td>";
-    echo "<td>" . $row['chapterFolder'] . "</td>";
-    echo "<form action='' method='post'>";
-    echo "<td><button name='cDelete' type='submit' value='" . $row['chapterUID'] . "'>Delete</button></td>";
-    echo "</form>";
-    echo "</tr>";
-}
-
-echo "</table>";
-
-$seriesQuery = "SELECT * FROM series";
-$seriesResult = mysqli_query($conn, $seriesQuery) or die("Could not select titles from series.");
-
-$seriesData = array();
-while ($row = mysqli_fetch_array($seriesResult)) {
-    $seriesData[] = $row;
-}
-
-if (isset($_POST['cDelete'])) {
-    $value = $_POST['cDelete'];
-    seriesDelete($value);
-}
-
-function seriesDelete($chapterUID)
-{
-    global $conn;
-    global $chapData;
-    global $seriesData;
-    print_r($chapterUID);
-    foreach ($chapData as $row) {
-        foreach ($seriesData as $row2) {
-            if ($row['chapterUID'] == $chapterUID) {
-                if ($row['series'] == $row2['seriesTitle']) {
-                    if (!array_map('unlink', glob("series/" . $row2['seriesFolder'] . "/" . $row['chapterFolder'] . "/*"))) {
-                        $sth = $conn->prepare("DELETE FROM chapters WHERE chapterUID=$chapterUID");
-
-                        if ($sth->execute()) {
-                            print("Series Deleted.");
-                        } else {
-                            print("Returned False?");
-                        }
-                        rmdir("series/" . $row2['seriesFolder'] . "/" . $row['chapterFolder']);
-                    }
-                } else {
-                    header("Location: index.php?page=createchapter&error=uidDidntMatch");
-                    exit();
-                }
-            }
-        }
+    $chapData = array();
+    while ($row = mysqli_fetch_array($result)) {
+        $chapData[] = $row;
     }
-}
-
-
-?>
-
-
-
-<main>
-    <section id="createchapter">
+    $seriesData = array();
+    while ($row = mysqli_fetch_array($seriesResult)) {
+        $seriesData[] = $row;
+    }
+    ?>
+    <section class="chapterForm">
         <form action="" method="post" enctype="multipart/form-data">
             <label>Series:</label>
             <select name="series" id="">
@@ -195,5 +133,52 @@ function seriesDelete($chapterUID)
         }
     }
 
+    echo "<section class='chapterList'>";
+    foreach ($chapData as $row) {
+        echo "<div class='chapterItem'>";
+        echo "<p>" . $row['chapterUID'] . "</p>";
+        echo "<p>" . $row['series'] . "</p>";
+        echo "<p>" . $row['chapterName'] . "</p>";
+        echo "<p>" . $row['chapterFolder'] . "</p>";
+        echo "<form action='' method='post'>";
+        echo "<p><button name='cDelete' type='submit' value='" . $row['chapterUID'] . "'>Delete</button></p>";
+        echo "</form>";
+        echo "</div>";
+    }
+    echo "</section>";
+
+    if (isset($_POST['cDelete'])) {
+        $value = $_POST['cDelete'];
+        seriesDelete($value);
+    }
+
+    function seriesDelete($chapterUID)
+    {
+        global $conn;
+        global $chapData;
+        global $seriesData;
+        foreach ($chapData as $row) {
+            foreach ($seriesData as $row2) {
+                if ($row['chapterUID'] == $chapterUID) {
+                    if ($row['series'] == $row2['seriesTitle']) {
+                        if (!array_map('unlink', glob("series/" . $row2['seriesFolder'] . "/" . $row['chapterFolder'] . "/*"))) {
+                            $sth = $conn->prepare("DELETE FROM chapters WHERE chapterUID=$chapterUID");
+
+                            if ($sth->execute()) {
+                                print("Series Deleted.");
+                            } else {
+                                print("Returned False?");
+                            }
+                            rmdir("series/" . $row2['seriesFolder'] . "/" . $row['chapterFolder']);
+                        }
+                    } else {
+                        echo "Press it again...";
+                        #header("Location: index.php?page=createchapter&error=uidDidntMatch");
+                        #exit();
+                    }
+                }
+            }
+        }
+    }
     ?>
 </main>

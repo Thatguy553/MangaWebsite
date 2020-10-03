@@ -25,6 +25,12 @@
             <ul>
                 <a href="index.php?page=home">Home</a>
                 <a href="index.php?page=reader">Series</a>
+                <?php
+                if (!$_SESSION) {
+                    echo "<a href='index.php?page=signup'>Signup</a>
+                            <a href='index.php?page=login'>Login</a>";
+                }
+                ?>
             </ul>
         </nav>
 
@@ -37,13 +43,6 @@
                 echo    "<a href='index.php?page=createchapter'>Create Chapter</a>";
             }
             echo "<a href='index.php?page=logout'>Logout</a>";
-            echo "</ul>";
-            echo "</nav>";
-        } else {
-            echo "<nav>";
-            echo "<ul>";
-            echo "<a href='index.php?page=signup'>Signup</a>
-                <a href='index.php?page=login'>Login</a>";
             echo "</ul>";
             echo "</nav>";
         }
