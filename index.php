@@ -56,6 +56,7 @@ if ($_GET) {
                 }
             }
         }
+
         #Display Chapter
         if (($_GET['series'] ?? "") && ($_GET['chapter'] ?? "")) {
             $chapString = $_GET['chapter'] ?? "";
@@ -80,27 +81,31 @@ if ($_GET) {
                                 $count = $count + 1;
                             }
 
+                            echo "<div class='chapterButtons'>";
                             if ($count > 1 && $count != $newLink && $newLink > 1) {
-                                echo "<a href='index.php?page=" . $_GET['page'] . "&series=" . $_GET['series'] . "&chapter=series_" . ($newLink + 1) . "'>Next</a>";
-                                echo "<a href='index.php?page=" . $_GET['page'] . "&series=" . $_GET['series'] . "&chapter=series_" . ($newLink - 1) . "'>Last</a>";
-                            } else if ($count > 1 && $count != $newLink) {
-                                echo "<a href='index.php?page=" . $_GET['page'] . "&series=" . $_GET['series'] . "&chapter=series_" . ($newLink + 1) . "'>Next</a>";
+                                echo "<a class='last' href='index.php?page=" . $_GET['page'] . "&series=" . $_GET['series'] . "&chapter=series_" . ($newLink - 1) . "'>Last</a>";
+                                echo "<a class='next' href='index.php?page=" . $_GET['page'] . "&series=" . $_GET['series'] . "&chapter=series_" . ($newLink + 1) . "'>Next</a>";
                             } else if ($newLink > 1) {
-                                echo "<a href='index.php?page=" . $_GET['page'] . "&series=" . $_GET['series'] . "&chapter=series_" . ($newLink - 1) . "'>Last</a>";
+                                echo "<a class='last' href='index.php?page=" . $_GET['page'] . "&series=" . $_GET['series'] . "&chapter=series_" . ($newLink - 1) . "'>Last</a>";
+                            } else if ($count > 1 && $count != $newLink) {
+                                echo "<a class='next' href='index.php?page=" . $_GET['page'] . "&series=" . $_GET['series'] . "&chapter=series_" . ($newLink + 1) . "'>Next</a>";
                             }
+                            echo "</div>";
 
                             for ($i = 2; $i < $pagesLength; $i++) {
                                 echo "<img src='series/series_" . rawurlencode($_GET['series']) . "/series_" . rawurlencode($newLink) . "/" . rawurlencode($pages[$i]) . "'>";
-                                #$pageIndex = $pageIndex + 1;
                             }
+
+                            echo "<div class='chapterButtons'>";
                             if ($count > 1 && $count != $newLink && $newLink > 1) {
-                                echo "<a href='index.php?page=" . $_GET['page'] . "&series=" . $_GET['series'] . "&chapter=series_" . ($newLink + 1) . "'>Next</a>";
-                                echo "<a href='index.php?page=" . $_GET['page'] . "&series=" . $_GET['series'] . "&chapter=series_" . ($newLink - 1) . "'>Last</a>";
-                            } else if ($count > 1 && $count != $newLink) {
-                                echo "<a href='index.php?page=" . $_GET['page'] . "&series=" . $_GET['series'] . "&chapter=series_" . ($newLink + 1) . "'>Next</a>";
+                                echo "<a class='last' href='index.php?page=" . $_GET['page'] . "&series=" . $_GET['series'] . "&chapter=series_" . ($newLink - 1) . "'>Last</a>";
+                                echo "<a class='next' href='index.php?page=" . $_GET['page'] . "&series=" . $_GET['series'] . "&chapter=series_" . ($newLink + 1) . "'>Next</a>";
                             } else if ($newLink > 1) {
-                                echo "<a href='index.php?page=" . $_GET['page'] . "&series=" . $_GET['series'] . "&chapter=series_" . ($newLink - 1) . "'>Last</a>";
+                                echo "<a class='last' href='index.php?page=" . $_GET['page'] . "&series=" . $_GET['series'] . "&chapter=series_" . ($newLink - 1) . "'>Last</a>";
+                            } else if ($count > 1 && $count != $newLink) {
+                                echo "<a class='next' href='index.php?page=" . $_GET['page'] . "&series=" . $_GET['series'] . "&chapter=series_" . ($newLink + 1) . "'>Next</a>";
                             }
+                            echo "</div>";
                             echo "</section>";
                             break;
                         }

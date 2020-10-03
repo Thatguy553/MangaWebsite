@@ -134,6 +134,15 @@
     }
 
     echo "<section class='chapterList'>";
+    echo "<div>";
+    echo "<div class='chapterILabel'>";
+    echo "<p>Chapter ID</p>";
+    echo "<p>Chapter Series</p>";
+    echo "<p>Chapter Name</p>";
+    echo "<p>Chapter Folder</p>";
+    echo "<p>Delete</p>";
+    echo "</div>";
+
     foreach ($chapData as $row) {
         echo "<div class='chapterItem'>";
         echo "<p>" . $row['chapterUID'] . "</p>";
@@ -145,6 +154,7 @@
         echo "</form>";
         echo "</div>";
     }
+    echo "</div>";
     echo "</section>";
 
     if (isset($_POST['cDelete'])) {
